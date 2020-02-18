@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.InputStream;
@@ -21,8 +22,14 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> celebURLs = new ArrayList<String>();
     ArrayList<String> celebNames = new ArrayList<String>();
-    int choosenCeleb = 0;
+    int chosenCeleb = 0;
+    String[] answers = new String[4];
+    int locationOfCorrectAnswer = 0;
     ImageView imageView;
+    Button button0;
+    Button button1;
+    Button button2;
+    Button button3;
 
     public class ImageDownloader extends AsyncTask<String, Void, Bitmap>{
 
@@ -77,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         imageView = findViewById(R.id.imageView);
+        button0 = findViewById(R.id.button0);
+        button1 = findViewById(R.id.button1);
+        button2 = findViewById(R.id.button2);
+        button3 = findViewById(R.id.button3);
 
         DownloadTask task = new DownloadTask();
         String result = null;
@@ -88,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
             String html = "<div class=\"image\"><img src=\"http://cdn.posh24.se/images/:profile/c/2274736\" alt=\"Sophie Turner\"></div>";
 
-            Pattern p = Pattern.compile("src=\"(.*?)\"");
+            Pattern p = Pattern.compile("img src=\"(.*?)\"");
             Matcher m = p.matcher(splitResult[0]);
 
             while(m.find()){
@@ -103,10 +114,30 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Random rand = new Random();
-            choosenCeleb = rand.nextInt(celebURLs.size());
+            chosenCeleb = rand.nextInt(celebURLs.size());
             ImageDownloader imageTask = new ImageDownloader();
-            Bitmap celebImage = imageTask.execute(celebURLs.get(choosenCeleb)).get();
+            Bitmap celebImage = imageTask.execute(celebURLs.get(chosenCeleb)).get();
             imageView.setImageBitmap(celebImage);
+
+            locationOfCorrectAnswer = rand.nextInt(4);
+            int incorrectAnswerLocation;
+
+            for(int i = 0; i < 4; i++){
+                if(i == locationOfCorrectAnswer){
+                    answers[i] = celebNames.get(chosenCeleb);
+                } else {
+                    incorrectAnswerLocation = rand.nextInt(celebURLs.size());
+                    while(incorrectAnswerLocation == chosenCeleb){
+                        incorrectAnswerLocation = rand.nextInt(celebURLs.size());
+                    }
+                    answers[i] = celebNames.get(incorrectAnswerLocation);
+                }
+            }
+
+            button0.setText(answers[0]);
+            button1.setText(answers[1]);
+            button2.setText(answers[2]);
+            button3.setText(answers[3]);
 
         } catch(Exception e){
             e.printStackTrace();
