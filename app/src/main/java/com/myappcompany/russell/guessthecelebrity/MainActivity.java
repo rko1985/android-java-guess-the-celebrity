@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,7 +53,26 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             result = task.execute("http://www.posh24.se/kandisar").get();
-            Log.i("Contents of URL", result);
+
+            String[] splitResult = result.split("<div class=\"listedArticle\">");
+
+            String html = "<div class=\"image\"><img src=\"http://cdn.posh24.se/images/:profile/c/2274736\" alt=\"Sophie Turner\"></div>";
+
+            Pattern p = Pattern.compile("src=\"(.*?)\"");
+            Matcher m = p.matcher(splitResult[0]);
+
+            while(m.find()){
+                System.out.println(m.group(1));
+            }
+
+            p = Pattern.compile("alt=\"(.*?)\"");
+            m = p.matcher(splitResult[0]);
+
+            while(m.find()){
+                System.out.println(m.group(1));
+            }
+
+
         } catch(Exception e){
             e.printStackTrace();
         }
